@@ -53,6 +53,11 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${playfair.variable} ${inter.variable} antialiased`}
     >
+      <head>
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+      </head>
       <body className="min-h-screen flex flex-col">
         <LayoutShell>{children}</LayoutShell>
       </body>

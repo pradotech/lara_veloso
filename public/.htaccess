@@ -1,0 +1,56 @@
+# ==============================================================================
+# CONFIGURAÇÃO DE CACHE E HOSTING - HOSTGATOR (APACHE)
+# Garante atualização imediata sem necessidade de refresh forçado ou limpar cache
+# ==============================================================================
+
+# Evitar listagem de diretórios
+Options -Indexes
+
+DirectoryIndex index.html
+
+# Fallback para 404
+ErrorDocument 404 /404.html
+
+<IfModule mod_headers.c>
+    # 1. Arquivos HTML e JSON: NUNCA armazenar em cache
+    # Isso garante que o navegador sempre busque o index.html mais recente,
+    # que por sua vez aponta para os arquivos com hash atualizados do Next.js
+    <FilesMatch "\.(html|htm|json)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0, post-check=0, pre-check=0"
+        Header set Pragma "no-cache"
+        Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+    </FilesMatch>
+
+    # 2. Arquivos com hash de build (_next/static): cache seguro e imutável
+    <FilesMatch "\.(js|css)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # 3. Mídias e imagens
+    <FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|ico|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=604800, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 0 seconds"
+
+    # HTML e JSON expiram imediatamente
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType application/json "access plus 0 seconds"
+
+    # JS e CSS com hash seguro
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+
+    # Imagens e fontes
+    ExpiresByType image/jpeg "access plus 1 week"
+    ExpiresByType image/png "access plus 1 week"
+    ExpiresByType image/webp "access plus 1 week"
+    ExpiresByType image/svg+xml "access plus 1 week"
+    ExpiresByType image/x-icon "access plus 1 week"
+    ExpiresByType font/woff2 "access plus 1 month"
+    ExpiresByType font/woff "access plus 1 month"
+</IfModule>
